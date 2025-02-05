@@ -1,0 +1,19 @@
+name: a task for production site
+
+on:
+  schedule:
+    - cron: '32 13 * * *'
+  workflow_dispatch:
+
+jobs:
+  environment selection:
+    runs-on: ubuntu-latest
+    steps:
+      - name: get default branch name
+        run: echo "DEFAULT_BRANCH=${{ github.event.repository.default_branch }}" >> $GITHUB_ENV
+
+      - name: Check if running on the default branch
+        if: github.ref == format('refs/heads/{0}', env.DEFAULT_BRANCH)
+        run: echo "This is the default branch $DEFAULT_BRANCH"
+        
+
