@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  environment selection:
+  environment-selection:
     runs-on: ubuntu-latest
     steps:
       - name: get default branch name
