@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  set-env:
+  select-environment:
     runs-on: ubuntu-latest
     outputs:
       ENV_NAME: ${{ steps.set-env-step.outputs.ENV_NAME }}  # Referencing the output from the step
@@ -28,7 +28,7 @@ jobs:
           # Set the environment variable as step output
           echo "ENV_NAME=$ENV_NAME" >> $GITHUB_OUTPUT
           
-  use-env:
+  run-in-the-environment:
     runs-on: ubuntu-latest
     needs: set-env  # Ensuring this job runs after set-env
     environment: ${{ needs.set-env.outputs.ENV_NAME }}  # Dynamic assignment to the 'name' of the environment
@@ -37,3 +37,17 @@ jobs:
         run: |
           echo "The workflow has requested to load ${{ needs.set-env.outputs.ENV_NAME }} environment, then now it has access to ${{ vars.NAME }}."
           
+
+  if-evoled-from-schedule-checkout-from-staging-and-run:
+    if: github.event_name == 'schedule'  # This ensures the job runs only for scheduled events
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout a staging branch
+        uses: actions/checkout@v4
+        with:
+          ref: staging-a  # Specify the branch you want to check out (e.g., staging)
+
+      - name: Print the current branch
+        run: |
+          echo "Current branch: $(git rev-parse --abbrev-ref HEAD)"
