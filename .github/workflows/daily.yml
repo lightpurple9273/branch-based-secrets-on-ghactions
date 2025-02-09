@@ -34,7 +34,7 @@ jobs:
     environment: ${{ needs.select-environment.outputs.ENV_NAME }}  # Dynamic assignment to the 'name' of the environment
     steps:
       - name: Access ENV_NAME output from the set-env job
-        env: ${{ secrets }}
+        env: ${{ secrets }} # WHAT!! Why this works lol
         run: |
           echo "The workflow has requested to load ${{ needs.select-environment.outputs.ENV_NAME }} environment, then now it has access to ${{ vars.NAME }}."
       - name: Checkout code
@@ -45,12 +45,12 @@ jobs:
           python-version: 3.11
       #- name: Install Dependencies
       #  run: pip install -r requirements.txt --no-cache-dir
-      #- name: Run Python Script
-      #  env:  ${{ secrets }}
-      #  run: python main.py
+      - name: Run Python Script
+        env:  ${{ secrets }} # this is absurd but works
+        run: python main.py
 
     
-  if-evoled-from-schedule-checkout-from-staging-and-run:
+  if-evoked-from-schedule-then-checkout-from-staging-branch-and-run:
     if: github.event_name == 'schedule'  # This ensures the job runs only for scheduled events
     runs-on: ubuntu-latest
     environment: staging
