@@ -35,5 +35,5 @@ jobs:
     steps:
       - name: Access ENV_NAME output from the set-env job
         run: |
-          echo "The workflow has requested to load ${{ needs.set-env.outputs.ENV_NAME }} environment, then now it has access to ${{ secrets.NAME }}."
+          echo "The workflow has requested to load ${{ needs.set-env.outputs.ENV_NAME }} environment, then now it has access to ${{ vars.NAME }}."
           
