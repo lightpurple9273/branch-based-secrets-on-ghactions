@@ -3,6 +3,6 @@ switching secrets based on branch names to ensure no mess!
 
 ||schedule|other than schedule
 |---|---|---
-|main|production|draft
-|other than main|draft|develop
+|main|production|staging
+|other than main|staging|development
 
