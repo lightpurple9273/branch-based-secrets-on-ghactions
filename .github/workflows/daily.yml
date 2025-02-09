@@ -6,14 +6,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  
   set-env:
     runs-on: ubuntu-latest
     outputs:
-      ENV_NAME: ${{ steps.set-env-step.outputs.ENV_NAME }}
+      ENV_NAME: ${{ steps.set-env-step.outputs.ENV_NAME }}  # Referencing the output from the step
     steps:
       - name: Determine environment
-        id: set-env-step
+        id: set-env-step  # Make sure to reference this id when setting the output
         run: |
           # Check if running on the default branch
           if [[ "${{ github.ref }}" == "refs/heads/${{ github.event.repository.default_branch }}" ]]; then
@@ -26,46 +25,13 @@ jobs:
             ENV_NAME="development"
           fi
           
-          # Set the environment variable
+          # Set the environment variable as step output
           echo "ENV_NAME=$ENV_NAME" >> $GITHUB_OUTPUT
-
-
-
-
-  daily-task-for-production:
-    if: github.event_name == 'schedule' & github.ref == format('refs/heads/{0}', github.event.repository.default_branch) # check if on schedule and on default_branch
+          
+  use-env:
     runs-on: ubuntu-latest
+    needs: set-env  # Ensuring this job runs after set-env
     steps:
-      - name: Check if running on the default branch
-        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
-        run: echo "This is the default branch $DEFAULT_BRANCH"
-
-  daily-task-for-staging:
-    if: github.event_name == 'schedule' & github.ref =~ format('refs/heads/{0}', github.event.repository.default_branch) # check if on schedule and NOT on default_branch
-    runs-on: ubuntu-latest
-
-  environment-selection:
-    runs-on: ubuntu-latest
-    steps:
-      - name: get default branch name
-        run: echo "DEFAULT_BRANCH=${{ github.event.repository.default_branch }}" >> $GITHUB_ENV
-
-      - name: Check if running on the default branch
-        if: github.ref == format('refs/heads/{0}', env.DEFAULT_BRANCH)
-        run: echo "This is the default branch $DEFAULT_BRANCH"
-
-  check-trigger:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Print trigger source
+      - name: Access ENV_NAME output from the set-env job
         run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "Triggered manually!"
-          elif [[ "${{ github.event_name }}" == "schedule" ]]; then
-            echo "Triggered by schedule!"
-          else
-            echo "Triggered by some other event: ${{ github.event_name }}"
-          fi
-
-
-        
+          echo "The environment is: ${{ needs.set-env.outputs.ENV_NAME }}"
