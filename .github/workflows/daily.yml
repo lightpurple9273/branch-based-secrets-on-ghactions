@@ -35,4 +35,4 @@ jobs:
     steps:
       - name: Access ENV_NAME output from the set-env job
         run: |
-          echo "The environment is: ${{ needs.set-env.outputs.ENV_NAME }}"
+          echo "The environment is: ${{ github.environment }}"
